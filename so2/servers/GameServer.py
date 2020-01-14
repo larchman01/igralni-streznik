@@ -28,4 +28,7 @@ class GameServer(Server):
             # Wait for state server to update state
             self.state_server.updated.wait()
             # Update game from state
+
+            self.game = self.state_server.value
+
             gevent.sleep(0.01)

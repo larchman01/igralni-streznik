@@ -2,6 +2,7 @@
 
 import gevent
 
+from so2.servers import TrackerServer
 from so2.servers.Server import Server
 
 
@@ -14,7 +15,7 @@ class StateServer(Server):
         tracker: Tracker server
     """
 
-    def __init__(self, tracker_server):
+    def __init__(self, tracker_server: TrackerServer):
         Server.__init__(self)
         self.tracker = tracker_server
 
@@ -22,6 +23,9 @@ class StateServer(Server):
         while True:
             self.tracker.updated.wait()
             # Update state from tracker
+            self.state = self.tracker.value
+            self.value = self.state
+
             self.updated.set()
             gevent.sleep(0.01)
             self.updated.clear()
