@@ -3,7 +3,7 @@
 from multiprocessing import Process, Queue
 
 import gevent
-from Tracker import Tracker
+from sledilnik.Tracker import Tracker
 
 from so2.servers.Server import Server
 
@@ -20,22 +20,28 @@ class TrackerServer(Server):
 
         self.state = None
         self.queue = Queue()
-        
-        Tracker.ResFileNames.fieldsFilePath = 'fields.json'
-        Tracker.ResFileNames.videoSource = './ROBO_3.mp4'
 
-        self.p = Process(target=Tracker.start, args=(self.queue,))
+        self.tracker = Tracker()
+        # self.tracker.setDebug()
+        self.tracker.setVideoSource('./so2/tracker/ROBO_3.mp4')
+
+        self.p = Process(target=self.tracker.start, args=(self.queue,))
+
+    def getValue(self):
+        if not self.queue.empty():
+            return self.queue.get()
 
     def _run(self):
         # Start tracker in another process and open message queue
+        self.p.start()
 
         while True:
             # Update state from tracker
 
             if not self.p.is_alive():
+                self.p = Process(target=self.tracker.start, args=(self.queue,))
                 self.p.start()
 
-            self.value = self.queue.get()
-            self.updated.set(self.queue.get())
-            gevent.sleep(0.01)
+            self.updated.set()
+            gevent.sleep(0.03)
             self.updated.clear()

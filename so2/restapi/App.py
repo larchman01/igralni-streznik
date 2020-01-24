@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import orjson
-from flask import Flask
+from flask import Flask, json
 
 from so2.servers.GameServer import GameServer
 
@@ -15,7 +15,7 @@ def RESTAPI(game_servers, state_server):
 
     @app.route("/game/<uuid:game_id>", methods=["GET"])
     def game(game_id):
-        return game_servers[game_id].game.getJSON()
+        return json.dumps(game_servers[game_id].gameData)
 
     @app.route("/game", methods=["PUT"])
     def create_game():

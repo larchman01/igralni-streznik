@@ -29,6 +29,8 @@ class GameServer(Server):
             self.state_server.updated.wait()
             # Update game from state
 
-            self.game = self.state_server.value
+            self.gameData = self.state_server.getGameData()
+            if self.gameData is not None:
+                self.gameData = self.gameData.fields
 
-            gevent.sleep(0.01)
+            gevent.sleep(0.03)
