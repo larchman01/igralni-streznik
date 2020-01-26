@@ -1,9 +1,11 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-import logging
+import logging
 
 import gevent
 
-from so2.servers import TrackerServer
+from so2.classes.GameLiveData import GameLiveData
 from so2.servers.Server import Server
+from so2.servers.TrackerServer import TrackerServer
 
 
 # class ResGameLiveData:
@@ -15,6 +17,13 @@ from so2.servers.Server import Server
 #         self.objects.clear()
 #         for id, obj in objects.items():
 #             self.objects[id] = MovableObject(id, obj.position[0], obj.position[1], obj.direction)
+
+# class MovableObject:
+#     def __init__(self, id, x, y, dir):
+#         self.id = id
+#         self.x = x
+#         self.y = y
+#         self.direction = dir
 
 
 class StateServer(Server):
@@ -28,20 +37,16 @@ class StateServer(Server):
 
     def __init__(self, tracker_server: TrackerServer):
         Server.__init__(self)
+        self.logger = logging.getLogger('sledenje-objektom.StateServer')
         self.tracker: TrackerServer = tracker_server
 
-    def getGameData(self):
-        return self.tracker.getValue()
-
     def _run(self):
+        self.logger.info('State server started.')
         while True:
             self.tracker.updated.wait()
-            # Update state from tracker
 
-            # game_data = self.tracker.getValue()
-            # print(game_data.fields)
-            # print(game_data.objects)
-
+            self.state: GameLiveData = self.tracker.state
             self.updated.set()
-            gevent.sleep(0.03)
+
+            gevent.sleep(0.01)
             self.updated.clear()
