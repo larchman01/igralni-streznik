@@ -2,7 +2,7 @@
 import logging
 
 import gevent
-from sledilnik.classes.GameLiveData import GameLiveData
+from sledilnik.classes.TrackerLiveData import TrackerLiveData
 
 from so2.servers.Server import Server
 from so2.servers.TrackerServer import TrackerServer
@@ -27,7 +27,7 @@ class StateServer(Server):
         while True:
             self.tracker.updated.wait()
 
-            self.state: GameLiveData = self.tracker.state
+            self.state: TrackerLiveData = self.tracker.state
             self.updated.set()
 
             gevent.sleep(0.01)
