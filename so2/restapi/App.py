@@ -15,7 +15,7 @@ def RESTAPI(game_servers: Dict[str, GameServer], state_server: StateServer):
     def index():
         return "{}"
 
-    @app.route("/game/<uuid:game_id>", methods=["GET"])
+    @app.route("/game/<string:game_id>", methods=["GET"])
     def game(game_id):
         if game_id in game_servers:
             gameData = game_servers[game_id].gameData

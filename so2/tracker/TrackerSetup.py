@@ -1,4 +1,5 @@
-from sledilnik import TrackerSetup
+from sledilnik.TrackerSetup import TrackerSetup
 
-TrackerSetup.ResFileNames.videoSource = 0
-TrackerSetup.start()
+trackerSetup = TrackerSetup()
+trackerSetup.fileNamesConfig.videoSource = 'ROBO_3.mp4'
+trackerSetup.start()

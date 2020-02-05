@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
-from uuid import uuid1
+from uuid import uuid4
 
 import gevent
+from sledilnik.classes.GameLiveData import GameLiveData
 
-from so2.classes.GameLiveData import GameLiveData
 from so2.servers.Server import Server
 from so2.servers.StateServer import StateServer
 
@@ -23,7 +23,7 @@ class GameServer(Server):
         Server.__init__(self)
         self.logger = logging.getLogger('sledenje-objektom.GameServer')
         self.state_server = state_server
-        self.id = uuid1()
+        self.id = str(uuid4())[:4]
         self.key = "very_secret_key"
 
     def _run(self):

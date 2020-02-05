@@ -4,8 +4,8 @@ import logging
 from multiprocessing import Process, Queue
 
 import gevent
+from sledilnik.TrackerGame import TrackerGame
 
-from sledilnik.TrackerGame import Tracker
 from so2.servers.Server import Server
 
 
@@ -24,9 +24,9 @@ class TrackerServer(Server):
         self.state = None
         self.queue = Queue()
 
-        self.tracker = Tracker()
-        self.tracker.setDebug()
-        self.tracker.setVideoSource('./so2/tracker/ROBO_3.mp4')
+        self.tracker = TrackerGame()
+        # self.tracker.debug = True
+        self.tracker.fileNamesConfig.videoSource = './so2/tracker/ROBO_3.mp4'
 
         self.p = Process(target=self.tracker.start, args=(self.queue,))
 

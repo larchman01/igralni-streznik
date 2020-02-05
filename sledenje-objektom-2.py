@@ -49,6 +49,7 @@ if __name__ == '__main__':
     state_server.start()
 
     new_game = GameServer(state_server)
+    print(new_game.id);
     game_servers[new_game.id] = new_game
     new_game.start()
 
