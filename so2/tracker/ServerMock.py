@@ -1,6 +1,6 @@
 from multiprocessing import Process, Queue, freeze_support
 
-from sledilnik.Tracker import Tracker
+from sledilnik.TrackerGame import Tracker
 
 if __name__ == '__main__':
     freeze_support()

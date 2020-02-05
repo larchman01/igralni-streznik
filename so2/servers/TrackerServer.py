@@ -4,8 +4,8 @@ import logging
 from multiprocessing import Process, Queue
 
 import gevent
-from sledilnik.Tracker import Tracker
 
+from sledilnik.TrackerGame import Tracker
 from so2.servers.Server import Server
 
 
