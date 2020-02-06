@@ -4,6 +4,7 @@ import logging
 import gevent
 from sledilnik.classes.TrackerLiveData import TrackerLiveData
 
+from so2.entities.GameLiveData import GameLiveData
 from so2.servers.Server import Server
 from so2.servers.TrackerServer import TrackerServer
 
@@ -21,13 +22,15 @@ class StateServer(Server):
         Server.__init__(self)
         self.logger = logging.getLogger('sledenje-objektom.StateServer')
         self.tracker: TrackerServer = tracker_server
+        self.gameLiveData: GameLiveData = GameLiveData()
 
     def _run(self):
         self.logger.info('State server started.')
         while True:
             self.tracker.updated.wait()
 
-            self.state: TrackerLiveData = self.tracker.state
+            self.gameLiveData.parseTrackerLiveData(self.tracker.state)
+            self.state: GameLiveData = self.gameLiveData
             self.updated.set()
 
             gevent.sleep(0.01)

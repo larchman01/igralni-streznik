@@ -3,8 +3,8 @@ import logging
 from uuid import uuid4
 
 import gevent
-from sledilnik.classes.TrackerLiveData import TrackerLiveData
 
+from so2.entities.GameLiveData import GameLiveData
 from so2.servers.Server import Server
 from so2.servers.StateServer import StateServer
 
@@ -33,6 +33,6 @@ class GameServer(Server):
             self.state_server.updated.wait()
             # Update game from state
 
-            self.gameData: TrackerLiveData = self.state_server.state
+            self.gameData: GameLiveData = self.state_server.state
 
             gevent.sleep(0.01)
