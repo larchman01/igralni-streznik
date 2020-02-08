@@ -48,7 +48,7 @@ if __name__ == '__main__':
     state_server = StateServer(tracker_server)
     state_server.start()
 
-    new_game = GameServer(state_server)
+    new_game = GameServer(state_server, 0, 5)
     game_servers[new_game.id] = new_game
     new_game.start()
 

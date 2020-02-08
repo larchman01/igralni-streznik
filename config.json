@@ -25,5 +25,6 @@
     "neutral": 2,
     "enemy": 3,
     "diseased": -2
-  }
+  },
+  "gameTime": 100
 }
