@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import pickle
 from typing import Dict, List
 
 from sledilnik.classes.Field import Field
@@ -23,9 +22,12 @@ class GameLiveData:
         self.teams: List[Team] = []
         self.gameOn: bool = False
         self.timeLeft: int = 0
-        self.fields: Dict[int, Field] = {}
+        self.fields: Dict[str, Field] = {}
         self.zones: Dict[str, Field] = {}
-        self.map: ConfigMap = self.readMap()
+
+        self.config: ConfigMap = ConfigMap()
+
+        self.readMap()
         self.readConfig()
 
     def parseTrackerLiveData(self, data: TrackerLiveData):
@@ -33,26 +35,27 @@ class GameLiveData:
         self.sortMovableObjects(data.objects)
 
     def readMap(self):
-        if os.path.isfile('map.json'):
-            with open('map.json') as json_file:
-                return json.load(json_file)
+        if os.path.isfile('config.json'):
+            with open('config.json') as jsonFile:
+                jsonConfig = json.load(jsonFile)
+                self.config.parseJSON(jsonConfig)
         else:
-            self.logger.critical("Can't load map.json!")
+            self.logger.critical("Can't load config.json!")
             quit(-1)
 
     def readConfig(self):
-        self.teams.append(Team(self.map.team1RobotId, self.map.teams[self.map.team1RobotId]))
-        self.teams.append(Team(self.map.team2RobotId, self.map.teams[self.map.team2RobotId]))
+        self.teams.append(Team(self.config.team1RobotId, self.config.teams[self.config.team1RobotId]))
+        self.teams.append(Team(self.config.team2RobotId, self.config.teams[self.config.team2RobotId]))
 
     def sortMovableObjects(self, objects: Dict[int, MovableObject]):
         for key, obj in objects.items():
-            if key == self.map.team1RobotId:
+            if key == self.config.team1RobotId:
                 self.robots[key] = obj
-            elif key == self.map.team2RobotId:
+            elif key == self.config.team2RobotId:
                 self.robots[key] = obj
-            elif key in self.map.healthyHives:
+            elif key in self.config.healthyHives:
                 self.hives[key] = Hive(obj, HiveType.HIVE_HEALTHY)
-            elif key in self.map.diseasedHives:
+            elif key in self.config.diseasedHives:
                 self.hives[key] = Hive(obj, HiveType.HIVE_DISEASED)
 
     def reprJSON(self):
@@ -63,15 +66,15 @@ class GameLiveData:
             },
             "fields": {
                 "baskets": {
-                    "team1": self.fields[FieldsNames.TEAM1_BASKET.value],
-                    "team2": self.fields[FieldsNames.TEAM2_BASKET.value]
+                    "team1": self.fields[FieldsNames.TEAM1_BASKET.value].reprJSON(),
+                    "team2": self.fields[FieldsNames.TEAM2_BASKET.value].reprJSON()
                 },
                 "zones": {
-                    "team1": self.fields[FieldsNames.TEAM1_ZONE.value],
-                    "team2": self.fields[FieldsNames.TEAM2_ZONE.value],
-                    "neutral": self.fields[FieldsNames.NEUTRAL_ZONE.value]
+                    "team1": self.fields[FieldsNames.TEAM1_ZONE.value].reprJSON(),
+                    "team2": self.fields[FieldsNames.TEAM2_ZONE.value].reprJSON(),
+                    "neutral": self.fields[FieldsNames.NEUTRAL_ZONE.value].reprJSON()
                 },
-                "battleground": self.fields[FieldsNames.BATTLEGROUND.value]
+                "field": self.fields[FieldsNames.FIELD.value].reprJSON()
             },
             "teams": {
                 "team1": self.teams[0].reprJSON(),

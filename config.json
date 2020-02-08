@@ -16,6 +16,14 @@
     "14": "Janez",
     "32": "Franci"
   },
-  "team1RobotId": -1,
-  "team2RobotId": 1
+  "players": {
+    "team1": 0,
+    "team2": 5
+  },
+  "points": {
+    "home": 1,
+    "neutral": 2,
+    "enemy": 3,
+    "diseased": -2
+  }
 }

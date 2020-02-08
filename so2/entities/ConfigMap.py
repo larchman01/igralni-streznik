@@ -5,6 +5,15 @@ class ConfigMap:
     def __init__(self):
         self.healthyHives: List = []
         self.diseasedHives: List = []
-        self.teams: Dict[int, str] = {}
-        self.team1RobotId: int = 1
-        self.team2RobotId: int = -1
+        self.teams: Dict[str, str] = {}
+        self.team1RobotId: str = '-1'
+        self.team2RobotId: str = '-2'
+        self.points: Dict[str, int] = {}
+
+    def parseJSON(self, json):
+        self.healthyHives = json['healthyHives']
+        self.diseasedHives = json['diseasedHives']
+        self.teams = json['teams']
+        self.team1RobotId = str(json['players']['team1'])
+        self.team2RobotId = str(json['players']['team2'])
+        self.points = json['points']
