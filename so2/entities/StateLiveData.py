@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Dict, List
 
 from sledilnik.classes.Field import Field
 from sledilnik.classes.MovableObject import MovableObject
@@ -13,8 +13,8 @@ from so2.enums.HiveTypeEnum import HiveType
 class StateLiveData:
     def __init__(self):
         self.logger = logging.getLogger('sledenje-objektom.StateLiveData')
-        self.robots: Dict[int, MovableObject] = {}
-        self.hives: Dict[int, Hive] = {}
+        self.robots: List[MovableObject] = []
+        self.hives: List[Hive] = []
         self.fields: Dict[str, Field] = {}
         self.zones: Dict[str, Field] = {}
         self.config: ConfigMap = ConfigMap()
@@ -24,10 +24,12 @@ class StateLiveData:
         self.sortMovableObjects(data.objects)
 
     def sortMovableObjects(self, objects: Dict[int, MovableObject]):
+        self.hives = []
+        self.robots = []
         for key, obj in objects.items():
             if key in self.config.healthyHives:
-                self.hives[key] = Hive(obj, HiveType.HIVE_HEALTHY)
+                self.hives.append(Hive(obj, HiveType.HIVE_HEALTHY))
             elif key in self.config.diseasedHives:
-                self.hives[key] = Hive(obj, HiveType.HIVE_DISEASED)
+                self.hives.append(Hive(obj, HiveType.HIVE_DISEASED))
             else:
-                self.robots[key] = obj
+                self.robots.append(obj)

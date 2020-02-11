@@ -48,10 +48,10 @@ if __name__ == '__main__':
     state_server = StateServer(tracker_server)
     state_server.start()
 
-    new_game = GameServer(state_server, 0, 5)
+    new_game = GameServer(state_server, 0, 25)
     game_servers[new_game.id] = new_game
     new_game.start()
 
     rest_app = RESTAPI(game_servers, state_server)
-    rest_server = WSGIServer(('', 8088), rest_app)
+    rest_server = WSGIServer(('0.0.0.0', 8088), rest_app)
     rest_server.serve_forever()

@@ -107,8 +107,8 @@ class GameLiveData:
     def reprJSON(self, stateLiveData: StateLiveData):
         return {
             "objects": {
-                "hives": {str(hiveId): hive.reprJSON() for hiveId, hive in stateLiveData.hives.items()},
-                "robots": {str(robotId): robot.reprJSON() for robotId, robot in stateLiveData.robots.items()}
+                "hives": {str(hive.id): hive.reprJSON() for hive in stateLiveData.hives},
+                "robots": {str(robot.id): robot.reprJSON() for robot in stateLiveData.robots}
             },
             "fields": {
                 "baskets": {
