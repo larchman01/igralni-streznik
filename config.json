@@ -1,6 +1,20 @@
 {
-  "healthyHives": [44, 66, 33],
-  "diseasedHives": [22, 77, 99],
+  "healthyHives": [
+    9,
+    22,
+    27,
+    29,
+    36,
+    40,
+    43,
+    47
+  ],
+  "diseasedHives": [
+    10,
+    24,
+    30,
+    42
+  ],
   "teams": {
     "0": "Super Glavce",
     "5": "GAYA",

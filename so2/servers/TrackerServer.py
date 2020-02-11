@@ -26,7 +26,7 @@ class TrackerServer(Server):
 
         self.tracker = TrackerGame()
         self.tracker.debug = True
-        self.tracker.fileNamesConfig.videoSource = './so2/tracker/ROBO_3.mp4'
+        self.tracker.fileNamesConfig.videoSource = 'http://192.168.1.117/mjpg/video.mjpg'
 
         self.p = Process(target=self.tracker.start, args=(self.queue,))
 

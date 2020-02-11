@@ -104,20 +104,11 @@ class GameLiveData:
         self.teams[1].score = \
             self.score[0] - team2DiseasedHivesCount * self.config.points['diseased']
 
-    @staticmethod
-    def getRobotJSON(robotId, stateLiveData: StateLiveData) -> str:
-        if robotId in stateLiveData.robots:
-            return stateLiveData.robots[robotId].reprJSON()
-        return ""
-
     def reprJSON(self, stateLiveData: StateLiveData):
         return {
             "objects": {
                 "hives": {str(hiveId): hive.reprJSON() for hiveId, hive in stateLiveData.hives.items()},
-                "robots": {
-                    "team1": self.getRobotJSON(self.teams[0].id, stateLiveData),
-                    "team2": self.getRobotJSON(self.teams[1].id, stateLiveData),
-                }
+                "robots": {str(robotId): robot.reprJSON() for robotId, robot in stateLiveData.robots.items()}
             },
             "fields": {
                 "baskets": {
