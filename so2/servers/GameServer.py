@@ -7,6 +7,7 @@ import gevent
 
 from so2.entities.GameLiveData import GameLiveData
 from so2.entities.StateLiveData import StateLiveData
+from so2.enums.ConfigEnum import Config
 from so2.servers.Server import Server
 from so2.servers.StateServer import StateServer
 
@@ -60,15 +61,15 @@ class GameServer(Server):
         }
 
     def startGame(self):
-        self.gameData.startGame(self.stateData)
+        self.gameData.startGame()
 
     def stopGame(self):
         self.gameData.gameOn = False
 
     def setTeams(self, robotIds: List[str]):
-        self.gameData.teams = []
-        self.gameData.addTeam(robotIds[0])
-        self.gameData.addTeam(robotIds[1])
+        self.gameData.teams = {}
+        self.gameData.addTeam(Config.TEAM1, robotIds[0])
+        self.gameData.addTeam(Config.TEAM2, robotIds[1])
 
     def setGameTime(self, gameTime: int):
         self.gameData.gameTime = gameTime
