@@ -1,4 +1,5 @@
 import logging
+from timeit import default_timer as timer
 from typing import Dict, List
 
 from shapely.geometry import Point as SPoint
@@ -22,14 +23,17 @@ class GameLiveData:
         self.gameOn: bool = False
         self.gameTime: int = 100
         self.timeLeft: int = self.gameTime
+        self.startTime: float = timer()
         self.config = ConfigMap()
 
         self.robots: Dict[int, MovableObject] = {}
         self.teams: Dict[Config, Team] = {}
         self.addTeam(Config.TEAM1, team1RobotId)
         self.addTeam(Config.TEAM2, team2RobotId)
+        self.time: float = timer()
 
         self.score: List[int] = [0, 0]
+        self.alterScore: List[int] = [0, 0]
 
         self.hivesStartingZones: Dict[int, FieldsNames] = {}
 
@@ -39,6 +43,7 @@ class GameLiveData:
     def startGame(self):
         self.score = [0, 0]
         self.gameOn = True
+        self.startTime = timer()
         self.timeLeft = self.gameTime
 
     def checkHiveZones(self, stateLiveData: StateLiveData):
@@ -52,6 +57,9 @@ class GameLiveData:
         elif self.checkIfObjectInArea(hive.pos, stateLiveData.fields[FieldsNames.TEAM2_ZONE.value]):
             return FieldsNames.TEAM2_ZONE
         return FieldsNames.NEUTRAL_ZONE
+
+    def checkTimeLeft(self):
+        return self.gameTime - (timer() - self.startTime)
 
     @staticmethod
     def checkIfObjectInArea(objectPos: Point, field: Field):
@@ -75,7 +83,7 @@ class GameLiveData:
             if self.checkIfObjectInArea(hive.pos, stateLiveData.fields[FieldsNames.TEAM1_BASKET.value]):
                 # if it's healthy, increase score accordingly
                 if hive.hiveType == HiveType.HIVE_HEALTHY:
-                    self.score[0] = hive.getPoints(Config.TEAM1, stateLiveData.config)
+                    self.score[0] += hive.getPoints(Config.TEAM1, stateLiveData.config)
                 # if it's not healthy, increase count
                 else:
                     team1DiseasedHivesCount += 1
@@ -84,16 +92,16 @@ class GameLiveData:
             elif self.checkIfObjectInArea(hive.pos, stateLiveData.fields[FieldsNames.TEAM2_BASKET.value]):
                 # if it's healthy, increase score accordingly
                 if hive.hiveType == HiveType.HIVE_HEALTHY:
-                    self.score[1] = hive.getPoints(Config.TEAM2, stateLiveData.config)
+                    self.score[1] += hive.getPoints(Config.TEAM2, stateLiveData.config)
                 # if it's not healthy, increase count
                 else:
                     team2DiseasedHivesCount += 1
 
         # compute scores for both teams
-        self.teams[0].score = \
-            self.score[0] - team1DiseasedHivesCount * self.config.points['diseased']
-        self.teams[1].score = \
-            self.score[0] - team2DiseasedHivesCount * self.config.points['diseased']
+        self.teams[Config.TEAM1].score = \
+            self.score[0] + team1DiseasedHivesCount * self.config.points['diseased'] + self.alterScore[0]
+        self.teams[Config.TEAM2].score = \
+            self.score[0] + team2DiseasedHivesCount * self.config.points['diseased'] + self.alterScore[1]
 
     def reprJSON(self, stateLiveData: StateLiveData):
         return {
@@ -117,6 +125,6 @@ class GameLiveData:
                 "team1": self.teams[Config.TEAM1].reprJSON(),
                 "team2": self.teams[Config.TEAM2].reprJSON()
             },
-            "timeLeft": self.timeLeft,
+            "timeLeft": self.checkTimeLeft(),
             "gameOn": self.gameOn
         }

@@ -84,8 +84,8 @@ def RESTAPI(game_servers: Dict[str, GameServer], state_server: StateServer):
         return json.dumps(
             [{"id": teamId, "name": teamName} for teamId, teamName in state_server.gameLiveData.config.teams.items()])
 
-    @app.errorhandler(400)
+    @app.errorhandler(404)
     def error(msg: str):
-        return msg, 400
+        return msg, 404
 
     return app

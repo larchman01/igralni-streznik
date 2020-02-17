@@ -42,9 +42,10 @@ class GameServer(Server):
 
             if self.gameData.gameOn:
                 self.gameData.computeScore(self.stateData)
-
-            else:
-                self.first = True
+                # stop the game when no time left
+                if self.gameData.checkTimeLeft() <= 0:
+                    self.gameData.gameOn = False
+                    break
 
             self.updated.set()
             gevent.sleep(0.01)
@@ -52,8 +53,8 @@ class GameServer(Server):
 
     def alterScore(self, scores: Dict[str, int]):
 
-        self.gameData.score[0] += scores['team1']
-        self.gameData.score[1] += scores['team2']
+        self.gameData.alterScore[0] += scores['team1']
+        self.gameData.alterScore[1] += scores['team2']
 
         return {
             'team1': self.gameData.score[0],
