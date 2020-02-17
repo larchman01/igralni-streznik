@@ -222,9 +222,9 @@
 #### GET `/teams`
 ##### Response:
 ```json
-{
-"0": "Team1",
-"1": "Team2",
-"2": "Team3"
-}
+[
+ {"id": "0", "name": "Super Glavce"},
+ {"id": "5", "name": "GAYA"},
+ {"id": "12", "name": "Distopija"}
+]
 ```

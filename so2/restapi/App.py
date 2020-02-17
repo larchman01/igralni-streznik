@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 from typing import Dict
 
 import orjson
@@ -80,7 +81,8 @@ def RESTAPI(game_servers: Dict[str, GameServer], state_server: StateServer):
 
     @app.route("/teams", methods=['GET'])
     def get_teams():
-        return state_server.gameLiveData.config.teams
+        return json.dumps(
+            [{"id": teamId, "name": teamName} for teamId, teamName in state_server.gameLiveData.config.teams.items()])
 
     @app.errorhandler(400)
     def error(msg: str):
