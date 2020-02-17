@@ -199,7 +199,7 @@
 ##### Response:
 ```json
 {
- "gameTime": "120"
+ "gameTime": 120
 }
 ```
 
@@ -214,17 +214,17 @@
 ##### Response:
 ```json
 {
- "team1": "2",
- "team2": "3"
+ "team1": 2,
+ "team2": 3
 }
 ```
 
 #### GET `/teams`
 ##### Response:
 ```json
-  {
-    "0": "Team1",
-    "1": "Team2",
-    "2": "Team3"
-  }
+{
+"0": "Team1",
+"1": "Team2",
+"2": "Team3"
+}
 ```
