@@ -114,8 +114,8 @@ class GameLiveData:
                 "field": stateLiveData.fields[FieldsNames.FIELD.value].reprJSON()
             },
             "teams": {
-                "team1": self.teams[0].reprJSON(),
-                "team2": self.teams[1].reprJSON()
+                "team1": self.teams[Config.TEAM1].reprJSON(),
+                "team2": self.teams[Config.TEAM2].reprJSON()
             },
             "timeLeft": self.timeLeft,
             "gameOn": self.gameOn
