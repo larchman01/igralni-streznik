@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from timeit import default_timer as timer
 from typing import Dict, List
 from uuid import uuid4
 
@@ -40,12 +41,17 @@ class GameServer(Server):
             self.state_server.updated.wait()
             self.stateData: StateLiveData = self.state_server.state
 
+            # print(self.id, self.gameData.gameOn)
             if self.gameData.gameOn:
+                self.gameData.checkHiveZones(self.stateData)
                 self.gameData.computeScore(self.stateData)
                 # stop the game when no time left
                 if self.gameData.checkTimeLeft() <= 0:
                     self.gameData.gameOn = False
+                    self.gameData.startTime = timer()
                     break
+            else:
+                self.gameData.startTime = timer()
 
             self.updated.set()
             gevent.sleep(0.01)
@@ -53,8 +59,8 @@ class GameServer(Server):
 
     def alterScore(self, scores: Dict[str, int]):
 
-        self.gameData.alterScore[0] += scores['team1']
-        self.gameData.alterScore[1] += scores['team2']
+        self.gameData.alterScore[0] = scores['team1']
+        self.gameData.alterScore[1] = scores['team2']
 
         return {
             'team1': self.gameData.score[0],

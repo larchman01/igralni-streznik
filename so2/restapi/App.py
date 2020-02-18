@@ -25,10 +25,15 @@ def RESTAPI(game_servers: Dict[str, GameServer], state_server: StateServer):
 
     @app.route("/game", methods=["PUT"])
     def create_game():
-        new_game = GameServer(state_server)
-        game_servers[new_game.id] = new_game
-        new_game.start()
-        return {"gameId": str(new_game.id)}
+        try:
+            team1Id = int(request.json['team1'])
+            team2Id = int(request.json['team2'])
+            new_game = GameServer(state_server, team1Id, team2Id)
+            game_servers[new_game.id] = new_game
+            new_game.start()
+            return {"gameId": str(new_game.id)}
+        except:
+            pass
 
     @app.route("/game", methods=["GET"])
     def get_games():
@@ -65,7 +70,7 @@ def RESTAPI(game_servers: Dict[str, GameServer], state_server: StateServer):
     def set_time(game_id):
         if game_id in game_servers:
             game_server = game_servers[game_id]
-            game_server.gameData.config.gameTime = request.json['gameTime']
+            game_server.setGameTime(request.json['gameTime'])
             return {"gameTime": game_server.gameData.config.gameTime}
         else:
             return error("Igra s takšnim id-jem ne obstaja!")
@@ -74,8 +79,9 @@ def RESTAPI(game_servers: Dict[str, GameServer], state_server: StateServer):
     def set_teams(game_id):
         if game_id in game_servers:
             game_server = game_servers[game_id]
+            print(request.data)
             game_server.setTeams(request.json['teams'])
-            return request.json['teams']
+            return request.data
         else:
             return error("Igra s takšnim id-jem ne obstaja!")
 

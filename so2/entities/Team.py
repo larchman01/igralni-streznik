@@ -3,6 +3,7 @@ class Team:
         self.id = teamId
         self.name = name
         self.score = 0
+        self.scoreAdjust = 0
 
     def reprJSON(self):
         return {

@@ -22,7 +22,6 @@ class GameLiveData:
         self.logger = logging.getLogger('sledenje-objektom.GameLiveData')
         self.gameOn: bool = False
         self.gameTime: int = 100
-        self.timeLeft: int = self.gameTime
         self.startTime: float = timer()
         self.config = ConfigMap()
 
@@ -38,16 +37,19 @@ class GameLiveData:
         self.hivesStartingZones: Dict[int, FieldsNames] = {}
 
     def addTeam(self, team: Config, robotId):
-        self.teams[team] = Team(robotId, self.config.teams[str(robotId)])
+        if str(robotId) in self.config.teams:
+            self.teams[team] = Team(robotId, self.config.teams[str(robotId)])
+        else:
+            logging.error("Team with specified id does not exist in config!")
 
     def startGame(self):
         self.score = [0, 0]
         self.gameOn = True
         self.startTime = timer()
-        self.timeLeft = self.gameTime
+        self.hivesStartingZones = {}
 
     def checkHiveZones(self, stateLiveData: StateLiveData):
-        for hiveId, hive in stateLiveData.hives:
+        for hive in stateLiveData.hives:
             if hive.hiveType == HiveType.HIVE_HEALTHY:
                 hive.addZone(self.hiveZone(hive, stateLiveData))
 
@@ -59,7 +61,9 @@ class GameLiveData:
         return FieldsNames.NEUTRAL_ZONE
 
     def checkTimeLeft(self):
-        return self.gameTime - (timer() - self.startTime)
+        if self.gameOn:
+            return self.gameTime - (timer() - self.startTime)
+        return self.gameTime
 
     @staticmethod
     def checkIfObjectInArea(objectPos: Point, field: Field):
@@ -78,7 +82,7 @@ class GameLiveData:
         team1DiseasedHivesCount = 0
         team2DiseasedHivesCount = 0
 
-        for hiveId, hive in stateLiveData.hives:
+        for hive in stateLiveData.hives:
             # if there is a hive in team1 basket
             if self.checkIfObjectInArea(hive.pos, stateLiveData.fields[FieldsNames.TEAM1_BASKET.value]):
                 # if it's healthy, increase score accordingly
@@ -101,12 +105,12 @@ class GameLiveData:
         self.teams[Config.TEAM1].score = \
             self.score[0] + team1DiseasedHivesCount * self.config.points['diseased'] + self.alterScore[0]
         self.teams[Config.TEAM2].score = \
-            self.score[0] + team2DiseasedHivesCount * self.config.points['diseased'] + self.alterScore[1]
+            self.score[1] + team2DiseasedHivesCount * self.config.points['diseased'] + self.alterScore[1]
 
     def reprJSON(self, stateLiveData: StateLiveData):
         return {
             "objects": {
-                "hives": {str(hive.id): hive.reprJSON() for hive in stateLiveData.hives},
+                "hives": {str(hive.id): hive.reprJSON(stateLiveData.config) for hive in stateLiveData.hives},
                 "robots": {str(robot.id): robot.reprJSON() for robot in stateLiveData.robots}
             },
             "fields": {

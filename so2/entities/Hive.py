@@ -17,7 +17,7 @@ class Hive(MovableObject):
     def addZone(self, zone: FieldsNames):
         self.zones[zone] = 1
 
-    def getPoints(self, team, config: ConfigMap) -> int:
+    def getPoints(self, team: Config, config: ConfigMap) -> int:
         if team == Config.TEAM1:
             if FieldsNames.TEAM2_ZONE in self.zones:
                 return config.points[Config.ENEMY.value]
@@ -33,7 +33,11 @@ class Hive(MovableObject):
             else:
                 return config.points[Config.HOME.value]
 
-    def reprJSON(self):
+    def reprJSON(self, config: ConfigMap):
         json = super().reprJSON()
         json["type"] = self.hiveType.value
+        json["points"] = {
+            "team1": self.getPoints(Config.TEAM1, config),
+            "team2": self.getPoints(Config.TEAM2, config)
+        }
         return json

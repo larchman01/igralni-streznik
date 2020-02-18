@@ -156,6 +156,13 @@
 ```
 
 #### PUT `/game`
+##### Request:
+```json
+{
+ "team1": 2,
+ "team2": 3
+}
+```
 ##### Response:
 ```json
 {
