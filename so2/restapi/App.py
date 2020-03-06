@@ -88,7 +88,9 @@ def RESTAPI(game_servers: Dict[str, GameServer], state_server: StateServer):
     @app.route("/teams", methods=['GET'])
     def get_teams():
         return json.dumps(
-            [{"id": teamId, "name": teamName} for teamId, teamName in state_server.gameLiveData.config.teams.items()])
+            [{"id": teamId, "name": teamName} for teamId, teamName in state_server.gameLiveData.config.teams.items()]
+            , ensure_ascii=False
+        ).encode('utf8')
 
     @app.errorhandler(404)
     def error(msg: str):

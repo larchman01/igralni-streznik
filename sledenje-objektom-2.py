@@ -53,5 +53,5 @@ if __name__ == '__main__':
     new_game.start()
 
     rest_app = RESTAPI(game_servers, state_server)
-    rest_server = WSGIServer(('0.0.0.0', 8088), rest_app)
+    rest_server = WSGIServer(('0.0.0.0', 8089), rest_app)
     rest_server.serve_forever()

@@ -9,3 +9,6 @@ class FieldsNames(Enum):
     TEAM1_ZONE = "cona ekipe 1"
     TEAM2_ZONE = "cona ekipe 2"
     NEUTRAL_ZONE = "nevtralna cona"
+
+    def __str__(self):
+        return self.name

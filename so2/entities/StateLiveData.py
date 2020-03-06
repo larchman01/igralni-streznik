@@ -14,7 +14,7 @@ class StateLiveData:
     def __init__(self):
         self.logger = logging.getLogger('sledenje-objektom.StateLiveData')
         self.robots: List[MovableObject] = []
-        self.hives: List[Hive] = []
+        self.hives: Dict[int, Hive] = {}
         self.fields: Dict[str, Field] = {}
         self.zones: Dict[str, Field] = {}
         self.config: ConfigMap = ConfigMap()
@@ -24,12 +24,17 @@ class StateLiveData:
         self.sortMovableObjects(data.objects)
 
     def sortMovableObjects(self, objects: Dict[int, MovableObject]):
-        self.hives = []
         self.robots = []
         for key, obj in objects.items():
             if key in self.config.healthyHives:
-                self.hives.append(Hive(obj, HiveType.HIVE_HEALTHY))
+                if key not in self.hives:
+                    self.hives[key] = Hive(obj, HiveType.HIVE_HEALTHY)
+                else:
+                    self.hives[key].update(obj)
             elif key in self.config.diseasedHives:
-                self.hives.append(Hive(obj, HiveType.HIVE_DISEASED))
+                if key not in self.hives:
+                    self.hives[key] = Hive(obj, HiveType.HIVE_DISEASED)
+                else:
+                    self.hives[key].update(obj)
             else:
                 self.robots.append(obj)

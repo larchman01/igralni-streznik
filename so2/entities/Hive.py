@@ -10,12 +10,17 @@ from so2.enums.HiveTypeEnum import HiveType
 
 class Hive(MovableObject):
     def __init__(self, obj: MovableObject, hiveType: HiveType):
-        super().__init__(obj.id, obj.pos.x, obj.pos.y, obj.direction)
+        super().__init__(obj.id, obj.pos.x, obj.pos.y, 0)
+        self.direction = obj.direction
         self.hiveType: HiveType = hiveType
-        self.zones: Dict[FieldsNames, int] = {}
+        self.zones: Dict[FieldsNames, bool] = {}
+
+    def update(self, obj):
+        self.pos = obj.pos
 
     def addZone(self, zone: FieldsNames):
-        self.zones[zone] = 1
+        if zone not in self.zones:
+            self.zones[zone] = True
 
     def getPoints(self, team: Config, config: ConfigMap) -> int:
         if team == Config.TEAM1:
@@ -39,5 +44,8 @@ class Hive(MovableObject):
         json["points"] = {
             "team1": self.getPoints(Config.TEAM1, config),
             "team2": self.getPoints(Config.TEAM2, config)
+        }
+        json["zones"] = {
+            str(zone): val for zone, val in self.zones.items()
         }
         return json
