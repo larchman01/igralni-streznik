@@ -33,11 +33,6 @@ class StateServer(Server):
             self.gameLiveData.parseTrackerLiveData(self.tracker.state)
             self.state: StateLiveData = self.gameLiveData
 
-            # self.logger.info(self.state.robots[0].pos.reprJSON())
-            # self.logger.info(self.state.robots[1].pos.reprJSON())
-
-            # self.logger.info(self.get_distance(self.state.robots[0].pos, self.state.robots[1].pos))
-
             self.updated.set()
 
             gevent.sleep(0.01)

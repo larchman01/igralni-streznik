@@ -28,11 +28,10 @@ class GameServer(Server):
 
         # init server
         self.logger = logging.getLogger('sledenje-objektom.GameServer')
-        self.state_server = state_server
-        self.id = str(uuid4())[:4]
-        self.key = "very_secret_key"
+        self.state_server: StateServer = state_server
+        self.id: str = str(uuid4())[:4]
+        self.key: str = "very_secret_key"
         self.gameData: GameLiveData = GameLiveData(team1RobotId, team2RobotId)
-        self.stateData: StateLiveData
 
     def _run(self):
         self.logger.info("Started a new game server with id: %s" % self.id)

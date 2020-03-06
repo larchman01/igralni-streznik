@@ -25,6 +25,7 @@ class StateLiveData:
 
     def sortMovableObjects(self, objects: Dict[int, MovableObject]):
         self.robots = []
+        self.hives = []
         for key, obj in objects.items():
             if key in self.config.healthyHives:
                 self.hives.append(Hive(obj, HiveType.HIVE_HEALTHY))

@@ -55,8 +55,11 @@ class GameLiveData:
         for hive in stateLiveData.hives:
             if hive.hiveType == HiveType.HIVE_HEALTHY:
                 zone = self.hiveZone(hive, stateLiveData)
-                if zone is not None and hive.id in self.hiveZones:
-                    self.hiveZones[hive.id].append(zone)
+                if zone is not None:
+                    if hive.id not in self.hiveZones:
+                        self.hiveZones[hive.id] = [zone]
+                    else:
+                        self.hiveZones[hive.id].append(zone)
 
     def hiveZone(self, hive: Hive, stateLiveData: StateLiveData):
         if self.checkIfObjectInArea(hive.pos, stateLiveData.fields[FieldsNames.TEAM1_ZONE.value]):
