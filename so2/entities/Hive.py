@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import List, Dict
 
 from sledilnik.classes.MovableObject import MovableObject
 
@@ -13,39 +13,31 @@ class Hive(MovableObject):
         super().__init__(obj.id, obj.pos.x, obj.pos.y, 0)
         self.direction = obj.direction
         self.hiveType: HiveType = hiveType
-        self.zones: Dict[FieldsNames, bool] = {}
 
     def update(self, obj):
         self.pos = obj.pos
 
-    def addZone(self, zone: FieldsNames):
-        if zone not in self.zones:
-            self.zones[zone] = True
-
-    def getPoints(self, team: Config, config: ConfigMap) -> int:
+    def getPoints(self, team: Config, config: ConfigMap, hiveZones: Dict[int, List[FieldsNames]]) -> int:
         if team == Config.TEAM1:
-            if FieldsNames.TEAM2_ZONE in self.zones:
+            if self.id in hiveZones and FieldsNames.TEAM2_ZONE in hiveZones[self.id]:
                 return config.points[Config.ENEMY.value]
-            elif FieldsNames.NEUTRAL_ZONE in self.zones:
+            elif self.id in hiveZones and FieldsNames.NEUTRAL_ZONE in hiveZones[self.id]:
                 return config.points[Config.NEUTRAL.value]
             else:
                 return config.points[Config.HOME.value]
         elif team == Config.TEAM2:
-            if FieldsNames.TEAM1_ZONE in self.zones:
+            if self.id in hiveZones and FieldsNames.TEAM1_ZONE in hiveZones[self.id]:
                 return config.points[Config.ENEMY.value]
-            elif FieldsNames.NEUTRAL_ZONE in self.zones:
+            elif self.id in hiveZones and FieldsNames.NEUTRAL_ZONE in hiveZones[self.id]:
                 return config.points[Config.NEUTRAL.value]
             else:
                 return config.points[Config.HOME.value]
 
-    def reprJSON(self, config: ConfigMap):
+    def reprJSON(self, config: ConfigMap, hiveZones: Dict[int, List[FieldsNames]]):
         json = super().reprJSON()
         json["type"] = self.hiveType.value
         json["points"] = {
-            "team1": self.getPoints(Config.TEAM1, config),
-            "team2": self.getPoints(Config.TEAM2, config)
-        }
-        json["zones"] = {
-            str(zone): val for zone, val in self.zones.items()
+            "team1": self.getPoints(Config.TEAM1, config, hiveZones),
+            "team2": self.getPoints(Config.TEAM2, config, hiveZones)
         }
         return json

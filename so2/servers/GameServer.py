@@ -63,8 +63,8 @@ class GameServer(Server):
         self.gameData.alterScore[1] = scores['team2']
 
         return {
-            'team1': self.gameData.score[0],
-            'team2': self.gameData.score[1]
+            'team1': self.gameData.teams[Config.TEAM1].score,
+            'team2': self.gameData.teams[Config.TEAM2].score
         }
 
     def startGame(self):
