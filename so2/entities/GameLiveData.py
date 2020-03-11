@@ -23,6 +23,8 @@ class GameLiveData:
         self.gameOn: bool = False
         self.gameTime: int = 100
         self.startTime: float = timer()
+        self.pauseTotalTime: float = 0.0
+        self.pauseStartTime: float = 0.0
         self.config = ConfigMap()
 
         self.robots: Dict[int, MovableObject] = {}
@@ -42,14 +44,32 @@ class GameLiveData:
         else:
             logging.error("Team with specified id does not exist in config!")
 
+    def pauseGame(self):
+        if self.gameOn:
+            self.pauseStartTime = timer()
+            self.gameOn = False
+
+    def unpauseGame(self):
+        if not self.gameOn:
+            self.gameOn = True
+            self.pauseTotalTime += timer() - self.pauseStartTime
+            self.pauseStartTime = 0.0
+
     def startGame(self):
 
         for team in self.teams.values():
             team.score = 0
 
-        self.gameOn = True
         self.startTime = timer()
+        self.pauseStartTime = 0.0
+        self.pauseTotalTime = 0.0
         self.hiveZones = {}
+        self.gameOn = True
+
+    def checkTimeLeft(self):
+        if self.gameOn:
+            return self.gameTime - (timer() - self.startTime) + self.pauseTotalTime
+        return self.gameTime
 
     def checkHiveZones(self, stateLiveData: StateLiveData):
         for hive in stateLiveData.hives:
@@ -74,11 +94,6 @@ class GameLiveData:
         else:
             print(str(hive.pos.reprTuple()) + str(hive.id) + "is NOT in ZONE!")
             return None
-
-    def checkTimeLeft(self):
-        if self.gameOn:
-            return self.gameTime - (timer() - self.startTime)
-        return self.gameTime
 
     @staticmethod
     def checkIfObjectInArea(objectPos: Point, field: Field):

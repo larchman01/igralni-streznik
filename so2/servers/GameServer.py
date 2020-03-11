@@ -69,6 +69,12 @@ class GameServer(Server):
     def startGame(self):
         self.gameData.startGame()
 
+    def pauseGame(self):
+        self.gameData.pauseGame()
+
+    def unpauseGame(self):
+        self.gameData.unpauseGame()
+
     def stopGame(self):
         self.gameData.gameOn = False
 

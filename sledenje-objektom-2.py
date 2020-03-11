@@ -6,23 +6,22 @@ from multiprocessing import freeze_support
 from gevent.pywsgi import WSGIServer
 
 from so2.restapi.App import RESTAPI
-from so2.servers.GameServer import GameServer
 from so2.servers.StateServer import StateServer
 from so2.servers.TrackerServer import TrackerServer
 
 
 def createLogger() -> logging.Logger:
     # create a logger
-    logger = logging.getLogger('sledenje-objektom')
-    logger.setLevel(logging.DEBUG)
+    loggerA = logging.getLogger('sledenje-objektom')
+    loggerA.setLevel(logging.ERROR)
 
     # create a file handler
     file_handler = logging.FileHandler('example.log')
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(logging.ERROR)
 
     # create a console handler
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
+    console_handler.setLevel(logging.ERROR)
 
     # create formatter
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -30,10 +29,10 @@ def createLogger() -> logging.Logger:
     console_handler.setFormatter(formatter)
 
     # add handlers to the logger
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+    loggerA.addHandler(file_handler)
+    loggerA.addHandler(console_handler)
 
-    return logger
+    return loggerA
 
 
 if __name__ == '__main__':
@@ -47,10 +46,6 @@ if __name__ == '__main__':
 
     state_server = StateServer(tracker_server)
     state_server.start()
-
-    new_game = GameServer(state_server, 0, 25)
-    game_servers[new_game.id] = new_game
-    new_game.start()
 
     rest_app = RESTAPI(game_servers, state_server)
     rest_server = WSGIServer(('0.0.0.0', 8089), rest_app)

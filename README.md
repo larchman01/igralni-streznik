@@ -253,6 +253,15 @@
 }
 ```
 
+#### PUT `/game/{game_id}/pause`
+Works like a switch.
+##### Response:
+```json
+{
+ "gameOn": "True"
+}
+```
+
 #### GET `/teams`
 ##### Response:
 ```json

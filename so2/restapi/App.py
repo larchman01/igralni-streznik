@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from queue import Queue
 from typing import Dict
 
 import orjson
@@ -11,6 +12,7 @@ from so2.servers.StateServer import StateServer
 
 def RESTAPI(game_servers: Dict[str, GameServer], state_server: StateServer):
     app = Flask(__name__, instance_relative_config=True)
+    server_queue = Queue()
 
     @app.route("/")
     def index():
@@ -28,12 +30,19 @@ def RESTAPI(game_servers: Dict[str, GameServer], state_server: StateServer):
         try:
             team1Id = int(request.json['team1'])
             team2Id = int(request.json['team2'])
+
             new_game = GameServer(state_server, team1Id, team2Id)
             game_servers[new_game.id] = new_game
             new_game.start()
+
+            server_queue.put(new_game.id)
+
+            if len(game_servers) >= 50:
+                game_servers.pop(server_queue.get())
+
             return {"gameId": str(new_game.id)}
         except:
-            pass
+            return error("Prišlo je do napake!")
 
     @app.route("/game", methods=["GET"])
     def get_games():
@@ -79,7 +88,6 @@ def RESTAPI(game_servers: Dict[str, GameServer], state_server: StateServer):
     def set_teams(game_id):
         if game_id in game_servers:
             game_server = game_servers[game_id]
-            print(request.data)
             game_server.setTeams(request.json['teams'])
             return request.data
         else:
@@ -92,8 +100,21 @@ def RESTAPI(game_servers: Dict[str, GameServer], state_server: StateServer):
             , ensure_ascii=False
         ).encode('utf8')
 
-    @app.errorhandler(404)
+    @app.route("/game/<string:game_id>/pause", methods=["PUT"])
+    def pause_switch(game_id):
+        if game_id in game_servers:
+            game_server = game_servers[game_id]
+            if game_server.gameData.gameOn:
+                game_server.pauseGame()
+                return {"gameOn": "False"}
+            else:
+                game_server.unpauseGame()
+                return {"gameOn": "True"}
+        else:
+            return error("Igra s takšnim id-jem ne obstaja!")
+
+    @app.errorhandler(400)
     def error(msg: str):
-        return msg, 404
+        return msg, 400
 
     return app
