@@ -1,8 +1,13 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-import logging
+import logging
+import math
 
 import gevent
+from sledilnik.classes import Point
 
+from so2.entities.StateLiveData import StateLiveData
 from so2.servers.Server import Server
+from so2.servers.TrackerServer import TrackerServer
 
 
 class StateServer(Server):
@@ -14,14 +19,27 @@ class StateServer(Server):
         tracker: Tracker server
     """
 
-    def __init__(self, tracker_server):
+    def __init__(self, tracker_server: TrackerServer):
         Server.__init__(self)
-        self.tracker = tracker_server
+        self.logger = logging.getLogger('sledenje-objektom.StateServer')
+        self.tracker: TrackerServer = tracker_server
+        self.gameLiveData: StateLiveData = StateLiveData()
 
     def _run(self):
+        self.logger.info('State server started.')
         while True:
             self.tracker.updated.wait()
-            # Update state from tracker
+
+            self.gameLiveData.parseTrackerLiveData(self.tracker.state)
+            self.state: StateLiveData = self.gameLiveData
+
             self.updated.set()
+
             gevent.sleep(0.01)
             self.updated.clear()
+
+    def get_distance(self, p1: Point, p2: Point) -> float:
+        """
+        Evklidska razdalja med dvema točkama na poligonu.
+        """
+        return math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2)
