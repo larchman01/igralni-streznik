@@ -143,7 +143,7 @@ class GameServer(Server):
                 } for ot in self.state_data.objects
             },
             'fields': {f_name: f.to_json() for f_name, f in self.state_data.fields.items()},
-            'delay': self.state_data.timestamp - time.time()
+            'delay': time.time() - self.state_data.timestamp
         }
 
     @classmethod
